@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ArrowRight, Check, Crown, Image as ImageIcon, Sparkles, Upload, WandSparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowRight, Check, Crown, Sparkles, Upload, WandSparkles } from "lucide-react";
 import modelExampleAsset from "@/assets/modelo-exemplo.webp.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -33,6 +33,7 @@ function SalesPage() {
   const [pose, setPose] = useState("Estúdio de foto");
   const [look, setLook] = useState("Body preto");
   const [started, setStarted] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!file) return setPreview("");
@@ -40,6 +41,10 @@ function SalesPage() {
     setPreview(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: demoStep === 0 ? "auto" : "smooth", block: "nearest" });
+  }, [demoStep, messages]);
 
   const creator = () => document.getElementById("criador")?.scrollIntoView({ behavior: "smooth" });
 
@@ -84,16 +89,16 @@ function SalesPage() {
       <section id="simulador" className="relative z-10 px-5 pb-24 pt-4">
           <div className="mx-auto max-w-[410px]">
           <div className="mb-5 text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">1 · Teste no chat</span><h2 className="mt-3 text-3xl font-semibold">Veja como funciona</h2></div>
-          <div className="overflow-hidden rounded-[38px] border-[6px] border-[#2b2029] bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)] ring-1 ring-[#ff65ad]/20">
-            <div className="mx-auto mt-2 h-5 w-24 rounded-full bg-black/70" aria-hidden="true" />
-            <div className="flex items-center gap-3 border-b border-white/8 px-5 py-4"><div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><Sparkles className="h-4 w-4" /></div><div><p className="text-sm font-semibold">Candy AI</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div></div>
-            <div className="min-h-[500px] space-y-3 p-4 sm:p-5">
+          <div className="flex h-[min(680px,calc(100svh-32px))] min-h-[560px] flex-col overflow-hidden rounded-[38px] border-[6px] border-[#2b2029] bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)] ring-1 ring-[#ff65ad]/20">
+            <div className="mx-auto mt-2 h-5 w-24 shrink-0 rounded-full bg-black/70" aria-hidden="true" />
+            <div className="flex shrink-0 items-center gap-3 border-b border-white/8 px-5 py-3"><div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><Sparkles className="h-4 w-4" /></div><div><p className="text-sm font-semibold">Candy AI</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div></div>
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[radial-gradient(circle_at_center,rgba(255,255,255,.025)_1px,transparent_1px)] bg-[length:18px_18px] p-4 [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
               {messages.map((m,i)=><div key={i} className={`flex ${m.from==="user"?"justify-end":"justify-start"}`}><div className="max-w-[86%]">{m.image&&<img src={m.image} alt="Foto enviada" className="mb-2 h-52 w-40 rounded-2xl border border-white/10 object-cover object-top" />}<div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${m.from==="user"?"rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df]":"rounded-bl-md border border-white/8 bg-white/[.045] text-white/70"}`}>{m.text}</div></div></div>)}
 
-              {demoStep===0&&<div className="rounded-2xl border border-[#ff65ad]/20 bg-[#ff4fa3]/[.035] p-4">
-                <div className="overflow-hidden rounded-2xl border border-white/10"><img src={sampleUpload} alt="Modelo de exemplo" className="h-[250px] w-full object-cover object-top" /></div>
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-semibold">Foto de exemplo</p><p className="mt-1 text-xs text-white/35">Use esta modelo para testar.</p></div><button onClick={runDemo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff4fa3] to-[#a846ee] px-5 py-3 text-xs font-bold"><Upload className="h-4 w-4" /> Enviar foto de exemplo</button></div>
-                <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs text-white/50"><input type="file" accept="image/*" className="hidden" onChange={e=>{if(e.target.files?.[0]) runDemo()}}/><ImageIcon className="h-4 w-4"/> Ou escolha uma foto</label>
+              {demoStep===0&&<div className="ml-auto max-w-[88%] rounded-2xl rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df] p-2">
+                <img src={sampleUpload} alt="Modelo de exemplo" className="max-h-[300px] w-full rounded-xl object-contain" />
+                <p className="px-2 pb-1 pt-2 text-sm font-medium">Usar esta foto da modelo?</p>
+                <button onClick={runDemo} className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white/95 px-4 py-3 text-xs font-bold text-[#8f2862]"><Upload className="h-4 w-4" /> Enviar foto da modelo</button>
               </div>}
 
               {demoStep===1&&<div className="rounded-2xl border border-[#ff65ad]/15 bg-white/[.025] p-5">
@@ -102,7 +107,8 @@ function SalesPage() {
                 <div className="mt-2 flex justify-between text-[11px] text-white/30"><span>Foto estúdio · IA trabalhando</span><span>{progress}%</span></div>
               </div>}
 
-              {demoStep===2&&<div className="overflow-hidden rounded-3xl border border-[#ff65ad]/20 bg-white/[.025]"><img src={sampleStudio} alt="Foto estúdio criada na demonstração" className="aspect-[4/5] w-full object-cover object-top" /><div className="p-5 text-center"><div className="mx-auto grid h-11 w-11 place-items-center rounded-full border border-[#ff87bd]/40"><Sparkles className="h-5 w-5 text-[#ff91c4]"/></div><p className="mt-3 text-xl font-semibold">Foto estúdio pronta</p><p className="mt-2 text-xs leading-5 text-white/50">Agora você pode criar a sua própria versão.</p><button onClick={creator} className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff3e98] to-[#9e42e9] px-6 py-3 text-xs font-bold">Criar minha foto <ArrowRight className="h-4 w-4"/></button></div></div>}
+              {demoStep===2&&<div className="overflow-hidden rounded-2xl rounded-bl-md border border-[#ff65ad]/20 bg-white/[.045] p-2"><div className="flex max-h-[360px] justify-center overflow-hidden rounded-xl bg-black/30"><img src={sampleStudio} alt="Foto estúdio criada na demonstração" className="h-auto max-h-[360px] w-auto max-w-full object-contain" /></div><div className="px-2 pb-2 pt-3"><p className="text-sm font-semibold">Foto estúdio pronta ✨</p><p className="mt-1 text-xs leading-5 text-white/50">Agora você pode criar a sua própria versão.</p><button onClick={creator} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff3e98] to-[#9e42e9] px-5 py-3 text-xs font-bold">Criar minha foto <ArrowRight className="h-4 w-4"/></button></div></div>}
+              <div ref={chatEndRef} aria-hidden="true" />
             </div>
           </div>
         </div>
