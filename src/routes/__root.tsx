@@ -77,8 +77,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Seu Estilo AI — Crie sua foto do seu jeito" },
-      { name: "description", content: "Escolha a pose, o estilo e crie uma foto personalizada com inteligência artificial." },
+      { title: "Candy AI — Transforme sua foto com inteligência artificial" },
+      { name: "description", content: "Transforme uma foto comum em uma nova versão com inteligência artificial, privacidade e personalização." },
       { name: "author", content: "Seu Estilo AI" },
       { property: "og:title", content: "Seu Estilo AI — Crie sua foto do seu jeito" },
       { property: "og:description", content: "Escolha a pose, o estilo e crie uma foto personalizada com inteligência artificial." },
