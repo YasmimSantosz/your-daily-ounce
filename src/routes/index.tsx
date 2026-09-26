@@ -24,16 +24,31 @@ const sampleStudio = "/modelo-estudio.jpg";
 function SalesPage() {
   const [demoStep, setDemoStep] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [messages, setMessages] = useState<Msg[]>([
-    { from: "ai", text: "Oi! Vou te mostrar em poucos segundos como funciona. ✨" },
-    { from: "ai", text: "A modelo já está pronta. Clique em “Enviar foto de exemplo” para testar a transformação." },
-  ]);
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [introTyping, setIntroTyping] = useState(true);
+  const [introReady, setIntroReady] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [pose, setPose] = useState("Estúdio de foto");
   const [look, setLook] = useState("Body preto");
   const [started, setStarted] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timers = [
+      window.setTimeout(() => {
+        setMessages([{ from: "ai", text: "Oi! Vou te mostrar em poucos segundos como funciona. ✨" }]);
+        setIntroTyping(false);
+      }, 650),
+      window.setTimeout(() => setIntroTyping(true), 1000),
+      window.setTimeout(() => {
+        setMessages(m => [...m, { from: "ai", text: "A foto da modelo já está pronta. Clique em “Enviar foto da modelo” para ver a transformação." }]);
+        setIntroTyping(false);
+        setIntroReady(true);
+      }, 1850),
+    ];
+    return () => timers.forEach(timer => window.clearTimeout(timer));
+  }, []);
 
   useEffect(() => {
     if (!file) return setPreview("");
@@ -76,7 +91,7 @@ function SalesPage() {
       </div>
 
       <nav className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-5 py-6">
-        <div className="flex items-center gap-2"><span className="grid h-9 w-9 place-items-center rounded-xl border border-[#ff83bd]/30 bg-[#ff4fa3]/10"><Sparkles className="h-4 w-4 text-[#ff9bc9]" /></span><b>Candy AI</b></div>
+        <div className="flex items-center gap-2"><span className="grid h-9 w-9 place-items-center rounded-xl border border-[#ff83bd]/30 bg-[#ff4fa3]/10"><Sparkles className="h-4 w-4 text-[#ff9bc9]" /></span><b>Crie sua foto</b></div>
         <button onClick={creator} className="rounded-full border border-[#ff74b7]/25 px-5 py-2 text-sm text-white/70">Criar minha foto</button>
       </nav>
 
@@ -91,11 +106,13 @@ function SalesPage() {
           <div className="mb-5 text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">1 · Teste no chat</span><h2 className="mt-3 text-3xl font-semibold">Veja como funciona</h2></div>
           <div className="flex h-[calc(100svh-190px)] min-h-[520px] max-h-[680px] flex-col overflow-hidden rounded-[38px] border-[6px] border-[#2b2029] bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)] ring-1 ring-[#ff65ad]/20 sm:h-[min(680px,calc(100svh-32px))] sm:min-h-[560px]">
             <div className="mx-auto mt-2 h-5 w-24 shrink-0 rounded-full bg-black/70" aria-hidden="true" />
-            <div className="flex shrink-0 items-center gap-3 border-b border-white/8 px-5 py-3"><div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><Sparkles className="h-4 w-4" /></div><div><p className="text-sm font-semibold">Candy AI</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div></div>
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[radial-gradient(circle_at_center,rgba(255,255,255,.025)_1px,transparent_1px)] bg-[length:18px_18px] p-4 [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
+            <div className="flex shrink-0 items-center gap-3 border-b border-white/8 px-5 py-3"><div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><WandSparkles className="h-4 w-4" /></div><div><p className="text-sm font-semibold">Assistente de fotos</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div></div>
+            <div className="pointer-events-none min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-none bg-[#efe7eb] bg-[radial-gradient(circle_at_center,rgba(105,74,91,.11)_1px,transparent_1px)] bg-[length:18px_18px] p-4 [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
               {messages.map((m,i)=><div key={i} className={`flex ${m.from==="user"?"justify-end":"justify-start"}`}><div className="max-w-[86%]">{m.image&&<img src={m.image} alt="Foto enviada" className="mb-2 h-52 w-40 rounded-2xl border border-white/10 object-cover object-top" />}<div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${m.from==="user"?"rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df]":"rounded-bl-md border border-white/8 bg-white/[.045] text-white/70"}`}>{m.text}</div></div></div>)}
 
-              {demoStep===0&&<div className="ml-auto max-w-[88%] rounded-2xl rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df] p-2">
+              {introTyping&&demoStep===0&&<div className="flex justify-start"><div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-4 shadow-sm" aria-label="Digitando"><span className="h-2 w-2 animate-bounce rounded-full bg-[#987d8b] [animation-delay:-.3s]"/><span className="h-2 w-2 animate-bounce rounded-full bg-[#987d8b] [animation-delay:-.15s]"/><span className="h-2 w-2 animate-bounce rounded-full bg-[#987d8b]"/></div></div>}
+
+              {demoStep===0&&introReady&&<div className="pointer-events-auto ml-auto max-w-[88%] rounded-2xl rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df] p-2">
                 <img src={sampleUpload} alt="Modelo de exemplo" className="max-h-[300px] w-full rounded-xl object-contain" />
                 <p className="px-2 pb-1 pt-2 text-sm font-medium">Usar esta foto da modelo?</p>
                 <button onClick={runDemo} className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white/95 px-4 py-3 text-xs font-bold text-[#8f2862]"><Upload className="h-4 w-4" /> Enviar foto da modelo</button>
