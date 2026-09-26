@@ -61,10 +61,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
+:root {\n  color-scheme: dark;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: oklch(0.08 0.01 330);
+  --foreground: oklch(0.98 0.01 330);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
