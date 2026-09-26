@@ -1,221 +1,125 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  Crown,
-  Sparkles,
-  WandSparkles,
-  ShieldCheck,
-  Upload,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, Check, Crown, Image as ImageIcon, Sparkles, Upload, WandSparkles } from "lucide-react";
 
-export const Route = createFileRoute("/")({
-  component: SalesPage,
-});
+export const Route = createFileRoute("/")({ component: SalesPage });
 
-
+type Msg = { from: "ai" | "user"; text: string; image?: string };
+const sampleUpload = "/modelo-upload.jpg";
+const sampleStudio = "/modelo-estudio.jpg";
 
 function SalesPage() {
-  const [step, setStep] = useState(0);
-  const [fileName, setFileName] = useState("");
+  const [demoStep, setDemoStep] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [messages, setMessages] = useState([
-    { from: "ai", text: "Oi! ✨ Vou te mostrar como sua foto pode ganhar uma nova versão com IA." },
-    { from: "ai", text: "Primeiro, envie uma foto sua. Depois eu cuido da transformação." },
+  const [messages, setMessages] = useState<Msg[]>([
+    { from: "ai", text: "Oi! Vou te mostrar em poucos segundos como funciona. ✨" },
+    { from: "ai", text: "A modelo já está pronta. Clique em “Enviar foto de exemplo” para testar a transformação." },
   ]);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState("");
+  const [pose, setPose] = useState("Estúdio");
+  const [look, setLook] = useState("Body preto");
+  const [started, setStarted] = useState(false);
 
-  const handleUpload = (file?: File) => {
-    if (!file) return;
-    setFileName(file.name);
-    setStep(1);
-    setMessages((m) => [...m, { from: "user", text: "Enviei minha foto 💗" }, { from: "ai", text: "Perfeito. Recebi sua foto! Agora vou preparar uma versão mais sofisticada e marcante." }]);
-    setProgress(0);
-    let value = 0;
+  useEffect(() => {
+    if (!file) return setPreview("");
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const creator = () => document.getElementById("criador")?.scrollIntoView({ behavior: "smooth" });
+
+  const runDemo = () => {
+    if (demoStep !== 0) return;
+    setDemoStep(1);
+    setMessages(m => [...m,
+      { from: "user", text: "Enviei a foto de exemplo.", image: sampleUpload },
+      { from: "ai", text: "Foto recebida. Agora estou preparando a foto estúdio..." },
+    ]);
+    let n = 8;
+    setProgress(n);
     const timer = window.setInterval(() => {
-      value += 10;
-      setProgress(value);
-      if (value >= 100) {
+      n += 8;
+      setProgress(Math.min(n, 100));
+      if (n >= 100) {
         window.clearInterval(timer);
-        setStep(2);
-        setMessages((m) => [...m, { from: "ai", text: "Prontinho! Sua prévia está logo abaixo. ✨" }]);
+        setDemoStep(2);
+        setMessages(m => [...m, { from: "ai", text: "Pronto. Veja a transformação da referência." }]);
       }
-    }, 180);
+    }, 130);
   };
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#130912] text-white">
-      <div className="pointer-events-none fixed inset-0 -z-0">
-        <div className="absolute left-[-15%] top-[-10%] h-[600px] w-[600px] rounded-full bg-[#ff4fa3]/20 blur-[150px]" />
-        <div className="absolute right-[-15%] top-[15%] h-[600px] w-[600px] rounded-full bg-[#b516ff]/16 blur-[160px]" />
-        <div className="absolute bottom-[-20%] left-[30%] h-[500px] w-[500px] rounded-full bg-[#ff9acb]/10 blur-[150px]" />
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute -left-32 -top-32 h-[500px] w-[500px] rounded-full bg-[#ff4fa3]/20 blur-[150px]" />
+        <div className="absolute -right-32 top-40 h-[500px] w-[500px] rounded-full bg-[#b516ff]/15 blur-[160px]" />
       </div>
 
-      <nav className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 py-6 lg:px-8">
-        <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-xl border border-[#ff83bd]/30 bg-[#ff4fa3]/10">
-            <Sparkles className="h-4 w-4 text-[#ff9bc9]" />
-          </div>
-          <span className="font-serif text-lg tracking-wide">Candy AI</span>
-        </div>
-        <a href="#simulador" className="rounded-full border border-[#ff74b7]/25 bg-[#ff4fa3]/5 px-5 py-2 text-sm text-white/75 transition hover:bg-[#ff4fa3]/10">Testar agora</a>
+      <nav className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-5 py-6">
+        <div className="flex items-center gap-2"><span className="grid h-9 w-9 place-items-center rounded-xl border border-[#ff83bd]/30 bg-[#ff4fa3]/10"><Sparkles className="h-4 w-4 text-[#ff9bc9]" /></span><b>Candy AI</b></div>
+        <button onClick={creator} className="rounded-full border border-[#ff74b7]/25 px-5 py-2 text-sm text-white/70">Criar minha foto</button>
       </nav>
 
-      <section className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-8 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pb-28">
-        <div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ff73b6]/25 bg-[#ff4fa3]/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#ff9bca]">
-            <WandSparkles className="h-3.5 w-3.5" /> Inteligência artificial
-          </div>
-          <h1 className="max-w-3xl font-serif text-5xl leading-[.96] tracking-[-.04em] sm:text-6xl lg:text-7xl">
-            Transforme uma foto comum em uma versão
-            <span className="bg-gradient-to-r from-[#ff9acb] via-[#ff4fa3] to-[#c36aff] bg-clip-text text-transparent"> mais marcante.</span>
-          </h1>
-          <p className="mt-7 max-w-xl text-base leading-7 text-white/60 sm:text-lg">
-            Você envia sua foto e escolhe o estilo. A IA cria uma versão sofisticada, sensual e profissional, preservando a sua identidade.
-          </p>
-          <button onClick={() => document.getElementById("simulador")?.scrollIntoView({ behavior: "smooth" })} className="mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff4fa3] to-[#b84cff] px-7 py-4 text-sm font-bold text-white shadow-[0_12px_60px_rgba(255,79,163,.3)] transition hover:-translate-y-0.5">
-            Experimentar gratuitamente <ArrowRight className="h-4 w-4" />
-          </button>
-          <div className="mt-7 flex flex-wrap gap-5 text-xs text-white/40">
-            <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#ff82bc]" /> Privacidade</span>
-            <span className="inline-flex items-center gap-2"><Sparkles className="h-4 w-4 text-[#d174ff]" /> Resultado personalizado</span>
-          </div>
-        </div>
+      <section className="relative z-10 mx-auto max-w-5xl px-5 pb-10 pt-5 text-center">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ff73b6]/25 bg-[#ff4fa3]/10 px-4 py-2 text-xs uppercase tracking-[.2em] text-[#ff9bca]"><WandSparkles className="h-3.5 w-3.5" /> Simulação com IA</div>
+        <h1 className="text-5xl font-semibold leading-none tracking-[-.04em] sm:text-6xl">Veja primeiro. <span className="bg-gradient-to-r from-[#ff9acb] via-[#ff4fa3] to-[#c36aff] bg-clip-text text-transparent">Crie depois.</span></h1>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/55 sm:text-lg">Converse com a IA, veja a transformação de uma modelo e depois crie a sua própria foto.</p>
+      </section>
 
-        <div className="relative mx-auto w-full max-w-[480px]">
-          <div className="absolute -inset-10 rounded-full bg-[#ff4fa3]/20 blur-[80px]" />
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[34px] border border-white/10 bg-gradient-to-br from-[#4b1737] via-[#1d1020] to-[#0d090d] shadow-2xl">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_15%,rgba(255,151,201,.4),transparent_27%),radial-gradient(circle_at_20%_80%,rgba(172,67,255,.25),transparent_35%)]" />
-            <div className="absolute inset-x-6 bottom-6 rounded-2xl border border-white/10 bg-black/35 p-5 backdrop-blur-xl">
-              <p className="text-xs uppercase tracking-[.2em] text-[#ff91c4]">Candy AI</p>
-              <p className="mt-2 font-serif text-2xl">Sua nova versão começa aqui.</p>
-              <p className="mt-2 text-xs text-white/40">Envie uma foto para experimentar.</p>
-            </div>
-            <div className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2">
-              <div className="grid h-28 w-28 place-items-center rounded-full border border-[#ff8ac1]/30 bg-white/5 backdrop-blur-xl shadow-[0_0_70px_rgba(255,79,163,.25)]">
-                <Sparkles className="h-10 w-10 text-[#ff9dca]" />
-              </div>
+      <section id="simulador" className="relative z-10 px-5 pb-24 pt-4">
+        <div className="mx-auto max-w-2xl">
+          <div className="mb-5 text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">1 · Teste no chat</span><h2 className="mt-3 text-3xl font-semibold">Veja como funciona</h2></div>
+          <div className="overflow-hidden rounded-[30px] border border-[#ff65ad]/15 bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)]">
+            <div className="flex items-center gap-3 border-b border-white/8 px-5 py-4"><div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><Sparkles className="h-4 w-4" /></div><div><p className="text-sm font-semibold">Candy AI</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div></div>
+            <div className="min-h-[620px] space-y-3 p-5 sm:p-7">
+              {messages.map((m,i)=><div key={i} className={`flex ${m.from==="user"?"justify-end":"justify-start"}`}><div className="max-w-[86%]">{m.image&&<img src={m.image} alt="Foto enviada" className="mb-2 h-52 w-40 rounded-2xl border border-white/10 object-cover object-top" />}<div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${m.from==="user"?"rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df]":"rounded-bl-md border border-white/8 bg-white/[.045] text-white/70"}`}>{m.text}</div></div></div>)}
+
+              {demoStep===0&&<div className="rounded-2xl border border-[#ff65ad]/20 bg-[#ff4fa3]/[.035] p-4">
+                <div className="overflow-hidden rounded-2xl border border-white/10"><img src={sampleUpload} alt="Modelo de exemplo" className="h-[300px] w-full object-cover object-top sm:h-[350px]" /></div>
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-semibold">Foto de exemplo</p><p className="mt-1 text-xs text-white/35">Use esta modelo para testar.</p></div><button onClick={runDemo} className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff4fa3] to-[#a846ee] px-5 py-3 text-xs font-bold"><Upload className="h-4 w-4" /> Enviar foto de exemplo</button></div>
+                <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs text-white/50"><input type="file" accept="image/*" className="hidden" onChange={e=>{if(e.target.files?.[0]) runDemo()}}/><ImageIcon className="h-4 w-4"/> Ou escolha uma foto</label>
+              </div>}
+
+              {demoStep===1&&<div className="rounded-2xl border border-[#ff65ad]/15 bg-white/[.025] p-5">
+                <div className="flex items-center gap-3"><img src={sampleUpload} alt="" className="h-14 w-14 rounded-xl object-cover object-top" /><div><p className="text-sm font-medium">Foto recebida</p><p className="text-xs text-white/35">Preparando foto estúdio...</p></div></div>
+                <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-gradient-to-r from-[#ff4fa3] to-[#a84cff] transition-all" style={{width:`${progress}%`}}/></div>
+                <div className="mt-2 flex justify-between text-[11px] text-white/30"><span>Foto estúdio · IA trabalhando</span><span>{progress}%</span></div>
+              </div>}
+
+              {demoStep===2&&<div className="relative overflow-hidden rounded-3xl border border-[#ff65ad]/20"><div className="relative aspect-[9/14]"><img src={sampleStudio} alt="Foto estúdio criada na demonstração" className="h-full w-full object-cover blur-[7px] scale-[1.03]" /><div className="absolute inset-0 bg-black/35"/><div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/55 p-5 text-center backdrop-blur-xl"><div className="mx-auto grid h-11 w-11 place-items-center rounded-full border border-[#ff87bd]/40"><Sparkles className="h-5 w-5 text-[#ff91c4]"/></div><p className="mt-3 text-xl font-semibold">Foto estúdio pronta</p><p className="mt-2 text-xs leading-5 text-white/50">Agora você pode criar a sua própria versão.</p><button onClick={creator} className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ff3e98] to-[#9e42e9] px-6 py-3 text-xs font-bold">Criar minha foto <ArrowRight className="h-4 w-4"/></button></div></div></div>}
             </div>
           </div>
         </div>
       </section>
 
-      <section id="simulador" className="relative z-10 border-y border-white/10 bg-[#0d080d]/80 px-5 py-20 lg:px-8 lg:py-28">
+      <section id="criador" className="relative z-10 border-y border-white/10 bg-[#0d080d]/80 px-5 py-20">
         <div className="mx-auto max-w-5xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">Experimente a tecnologia</span>
-            <h2 className="mt-4 font-serif text-4xl sm:text-5xl">Converse com a IA</h2>
-            <p className="mt-4 text-white/45">É como uma conversa: você envia, a IA processa e mostra uma prévia.</p>
-          </div>
-
-          <div className="mx-auto mt-12 max-w-2xl overflow-hidden rounded-[30px] border border-[#ff65ad]/15 bg-[#171017]/90 shadow-[0_30px_100px_rgba(255,53,151,.08)]">
-            <div className="flex items-center gap-3 border-b border-white/8 px-5 py-4">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><Sparkles className="h-4 w-4" /></div>
-              <div><p className="text-sm font-semibold">Candy AI</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div>
-            </div>
-
-            <div className="min-h-[430px] space-y-3 p-5 sm:p-7">
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.from === "user" ? "rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df] text-white" : "rounded-bl-md border border-white/8 bg-white/[.045] text-white/70"}`}>{msg.text}</div>
-                </div>
-              ))}
-
-              {step === 0 && (
-                <label className="mt-5 block cursor-pointer rounded-2xl border border-dashed border-[#ff65ad]/30 bg-[#ff4fa3]/[.035] p-7 text-center transition hover:border-[#ff65ad]/60 hover:bg-[#ff4fa3]/[.06]">
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e.target.files?.[0])} />
-                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#ff4fa3]/10 text-[#ff88be]"><Upload className="h-6 w-6" /></div>
-                  <p className="mt-4 text-sm font-semibold">Enviar minha foto</p>
-                  <p className="mt-1 text-xs text-white/35">Clique para adicionar uma imagem</p>
-                </label>
-              )}
-
-              {step === 1 && (
-                <div className="rounded-2xl border border-[#ff65ad]/15 bg-white/[.025] p-5">
-                  <div className="flex items-center gap-3">
-                    <div className="h-11 w-11 overflow-hidden rounded-xl bg-gradient-to-br from-[#ff4fa3]/30 to-[#8d43ff]/30"><img src={URL.createObjectURL(new Blob())} className="hidden" /></div>
-                    <div className="min-w-0"><p className="text-sm font-medium">Processando sua foto...</p><p className="truncate text-xs text-white/35">{fileName}</p></div>
-                  </div>
-                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-gradient-to-r from-[#ff4fa3] to-[#a84cff] transition-all duration-200" style={{ width: progress + "%" }} /></div>
-                  <div className="mt-2 flex justify-between text-[11px] text-white/30"><span>IA trabalhando</span><span>{progress}%</span></div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="relative mx-auto mt-5 max-w-sm overflow-hidden rounded-3xl border border-[#ff65ad]/20 bg-[#080609]">
-                  <div className="aspect-[4/5] bg-gradient-to-br from-[#6e284e] via-[#261321] to-[#0b080c] blur-[14px]">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(255,168,210,.4),transparent_25%),linear-gradient(135deg,rgba(255,79,163,.25),transparent_50%)]" />
-                  </div>
-                  <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px]" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-7 text-center">
-                    <div className="grid h-14 w-14 place-items-center rounded-full border border-[#ff87bd]/40 bg-black/45 backdrop-blur-xl"><Sparkles className="h-6 w-6 text-[#ff91c4]" /></div>
-                    <p className="mt-5 font-serif text-2xl">Sua prévia está pronta</p>
-                    <p className="mt-2 text-xs leading-5 text-white/50">Desbloqueie a versão em alta definição para visualizar todos os detalhes.</p>
-                    <button className="mt-5 rounded-full bg-gradient-to-r from-[#ff3e98] to-[#9e42e9] px-6 py-3 text-xs font-bold shadow-[0_8px_35px_rgba(255,62,152,.35)]">DESBLOQUEAR VERSÃO HD</button>
-                  </div>
-                </div>
-              )}
+          <div className="mx-auto max-w-2xl text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">2 · Agora é a sua vez</span><h2 className="mt-4 text-4xl font-semibold">Crie sua própria foto</h2><p className="mt-4 text-white/45">Envie sua foto e monte a proposta do seu jeito.</p></div>
+          <div className="mt-12 grid gap-6 lg:grid-cols-[.9fr_1.1fr]">
+            <label className="cursor-pointer rounded-[28px] border border-dashed border-[#ff65ad]/30 bg-[#171017] p-4">
+              <input type="file" accept="image/*" className="hidden" onChange={e=>setFile(e.target.files?.[0]||null)}/>
+              <div className="relative grid aspect-[4/5] place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#4d1938] via-[#1f1020] to-[#0d090d]">{preview?<><img src={preview} alt="Sua foto" className="absolute inset-0 h-full w-full object-cover"/><div className="absolute bottom-4 rounded-full bg-black/55 px-4 py-2 text-xs">Trocar foto</div></>:<div className="text-center"><div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[#ff4fa3]/10 text-[#ff88be]"><Upload className="h-7 w-7"/></div><p className="mt-4 font-semibold">Enviar minha foto</p><p className="mt-2 text-xs text-white/35">JPG, PNG ou WEBP</p></div>}</div>
+            </label>
+            <div className="rounded-[28px] border border-white/8 bg-[#171017] p-6 sm:p-8">
+              <Option title="Pose" values={["Estúdio","Espelho","Sentada","Lifestyle"]} value={pose} setValue={setPose}/>
+              <div className="mt-7"><Option title="Visual" values={["Body preto","Vestido","Look casual","Elegante"]} value={look} setValue={setLook}/></div>
+              <div className="mt-7 rounded-2xl border border-white/8 bg-black/20 p-4"><p className="text-xs text-white/35">Sua criação</p><p className="mt-1 text-sm text-white/70">{pose} · {look}</p></div>
+              <button disabled={!file} onClick={()=>setStarted(true)} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff4fa3] to-[#a846ee] px-6 py-4 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-35">{started?"Criação iniciada...":"CRIAR MINHA FOTO"} <ArrowRight className="h-4 w-4"/></button>
+              {started&&<p className="mt-3 text-center text-xs text-[#ff9acb]">Sua configuração está pronta para conectar à geração de IA.</p>}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="relative z-10 mx-auto max-w-6xl px-5 py-20 lg:px-8 lg:py-28">
-        <div className="text-center">
-          <span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">Veja a diferença</span>
-          <h2 className="mt-4 font-serif text-4xl sm:text-5xl">Uma nova versão da sua foto.</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-white/45">As prévias abaixo ficam propositalmente protegidas para mostrar apenas a atmosfera do resultado.</p>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {["Retrato", "Espelho", "Lifestyle"].map((label, i) => (
-            <div key={label} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-[#171017]">
-              <div className="grid aspect-[4/5] place-items-center bg-gradient-to-br from-[#56233e] via-[#241323] to-[#0d090d]">
-                <div className="h-52 w-36 rounded-[50%] bg-[#d7899f]/20 blur-[25px]" />
-              </div>
-              <div className="absolute inset-0 bg-black/35 backdrop-blur-[7px]" />
-              <div className="absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-black/45 p-4 backdrop-blur-xl">
-                <p className="text-xs text-white/35">ESTILO {i + 1}</p>
-                <p className="mt-1 font-serif text-xl">{label}</p>
-                <button onClick={() => document.getElementById("simulador")?.scrollIntoView({ behavior: "smooth" })} className="mt-4 w-full rounded-xl bg-gradient-to-r from-[#ff3e98] to-[#9e42e9] py-3 text-xs font-bold">DESBLOQUEAR VERSÃO HD</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="relative z-10 border-y border-white/10 bg-[#0d080d]/70 px-5 py-20 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <div className="text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">Como funciona</span><h2 className="mt-4 font-serif text-4xl sm:text-5xl">Três passos. Uma nova foto.</h2></div>
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {[
-              ["01", "Upload", "Envie uma foto sua para servir como referência."],
-              ["02", "IA processa", "Nossa experiência simula o processamento e a criação da nova versão."],
-              ["03", "Você recebe", "Depois de desbloquear, você acessa a criação final."],
-            ].map(([n, title, text]) => (
-              <div key={n} className="rounded-3xl border border-white/8 bg-white/[.025] p-7">
-                <span className="font-serif text-3xl text-[#ff72b5]">{n}</span>
-                <h3 className="mt-8 font-semibold">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-white/40">{text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="relative z-10 px-5 py-20 lg:px-8">
-        <div className="mx-auto max-w-4xl rounded-[32px] border border-[#ff5ba9]/20 bg-gradient-to-br from-[#351526] to-[#160d16] p-8 text-center shadow-[0_30px_100px_rgba(255,62,152,.1)] sm:p-12">
-          <Crown className="mx-auto h-7 w-7 text-[#ff8fc3]" />
-          <h2 className="mt-5 font-serif text-4xl sm:text-5xl">Sua foto, do seu jeito.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-white/45">Faça sua simulação e descubra uma experiência criada para valorizar seu estilo.</p>
-          <button onClick={() => document.getElementById("simulador")?.scrollIntoView({ behavior: "smooth" })} className="mt-8 rounded-full bg-gradient-to-r from-[#ff4fa3] to-[#a846ee] px-8 py-4 text-sm font-bold shadow-[0_10px_50px_rgba(255,79,163,.3)]">CRIAR MINHA PRÉVIA</button>
-        </div>
-      </section>
-
-      <footer className="border-t border-white/10 px-5 py-8 text-center text-xs text-white/25">
-        <div className="flex justify-center gap-6"><a href="#" className="hover:text-white/50">Termos de uso</a><a href="#" className="hover:text-white/50">Privacidade</a></div>
-        <p className="mt-4">© 2026 Candy AI · Experiência de criação de imagens com inteligência artificial.</p>
-      </footer>
+      <section className="relative z-10 mx-auto max-w-5xl px-5 py-20"><div className="grid gap-4 md:grid-cols-3">{[["01","Veja a demonstração"],["02","Envie sua foto"],["03","Crie sua versão"]].map(([n,t])=><div key={n} className="rounded-3xl border border-white/8 bg-white/[.025] p-7"><span className="text-3xl font-semibold text-[#ff72b5]">{n}</span><h3 className="mt-8 font-semibold">{t}</h3><p className="mt-3 text-sm leading-6 text-white/40">Um fluxo simples, visual e feito para você entender a experiência antes de criar.</p></div>)}</div></section>
+      <section className="px-5 py-16"><div className="mx-auto max-w-4xl rounded-[32px] border border-[#ff5ba9]/20 bg-gradient-to-br from-[#351526] to-[#160d16] p-10 text-center"><Crown className="mx-auto h-7 w-7 text-[#ff8fc3]"/><h2 className="mt-5 text-4xl font-semibold">Sua foto, do seu jeito.</h2><button onClick={creator} className="mt-7 rounded-full bg-gradient-to-r from-[#ff4fa3] to-[#a846ee] px-8 py-4 text-sm font-bold">CRIAR MINHA FOTO</button></div></section>
+      <footer className="border-t border-white/10 px-5 py-8 text-center text-xs text-white/25"><div className="flex justify-center gap-6"><a href="#">Termos de uso</a><a href="#">Privacidade</a></div><p className="mt-4">© 2026 Candy AI · Experiência de criação de imagens com inteligência artificial.</p></footer>
     </main>
   );
+}
+
+function Option({title,values,value,setValue}:{title:string;values:string[];value:string;setValue:(v:string)=>void}) {
+  return <div><p className="text-xs uppercase tracking-[.2em] text-[#ff83bd]">{title}</p><div className="mt-3 grid grid-cols-2 gap-3">{values.map(v=><button key={v} onClick={()=>setValue(v)} className={`rounded-xl border px-4 py-3 text-left text-sm transition ${value===v?"border-[#ff5ba9]/60 bg-[#ff4fa3]/10 text-white":"border-white/8 bg-white/[.02] text-white/45"}`}>{value===v&&<Check className="mr-2 inline h-3.5 w-3.5 text-[#ff8fc3]"/>}{v}</button>)}</div></div>;
 }
