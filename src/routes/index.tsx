@@ -30,7 +30,7 @@ function SalesPage() {
   ]);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
-  const [pose, setPose] = useState("Estúdio");
+  const [pose, setPose] = useState("Estúdio de foto");
   const [look, setLook] = useState("Body preto");
   const [started, setStarted] = useState(false);
 
