@@ -61,7 +61,8 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {\n  color-scheme: dark;
+:root {
+  color-scheme: dark;
   --radius: 0.625rem;
   --background: oklch(0.08 0.01 330);
   --foreground: oklch(0.98 0.01 330);
