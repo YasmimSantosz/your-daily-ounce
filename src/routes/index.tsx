@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Check, Crown, Sparkles, Upload, WandSparkles } from "lucide-react";
 import modelExampleAsset from "@/assets/modelo-exemplo.webp.asset.json";
 
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Crie sua foto com inteligência artificial" },
       { name: "description", content: "Veja a demonstração e depois crie sua própria foto com inteligência artificial." },
-      { property: "og:title: "Crie sua foto do seu jeito", },
+      { property: "og:title", content: "Crie sua foto do seu jeito" },
       { property: "og:description", content: "Veja a demonstração e depois crie sua própria foto." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -32,7 +32,6 @@ function SalesPage() {
   const [pose, setPose] = useState("Estúdio de foto");
   const [look, setLook] = useState("Body preto");
   const [started, setStarted] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timers = [
@@ -101,7 +100,7 @@ function SalesPage() {
       <section className="relative z-10 mx-auto max-w-5xl px-5 pb-10 pt-5 text-center">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ff73b6]/25 bg-[#ff4fa3]/10 px-4 py-2 text-xs uppercase tracking-[.2em] text-[#ff9bca]"><WandSparkles className="h-3.5 w-3.5" /> Simulação com IA</div>
         <h1 className="text-5xl font-semibold leading-none tracking-[-.04em] sm:text-6xl">Veja primeiro. <span className="bg-gradient-to-r from-[#ff9acb] via-[#ff4fa3] to-[#c36aff] bg-clip-text text-transparent">Crie depois.</span></h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/55 sm:text-lg">Converse com a IA, veja a transformação de uma modelo e depois crie a sua própria foto.</p>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/55 sm:text-lg">Veja a conversa acontecendo, acompanhe a transformação de uma modelo e depois crie a sua própria foto.</p>
       </section>
 
       <section id="simulador" className="relative z-10 px-5 pb-24 pt-4">
@@ -109,9 +108,9 @@ function SalesPage() {
           <div className="mb-5 text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">1 · Teste no chat</span><h2 className="mt-3 text-3xl font-semibold">Veja como funciona</h2></div>
           <div className="flex h-[calc(100svh-190px)] min-h-[520px] max-h-[680px] flex-col overflow-hidden rounded-[38px] border-[6px] border-[#2b2029] bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)] ring-1 ring-[#ff65ad]/20 sm:h-[min(680px,calc(100svh-32px))] sm:min-h-[560px]">
             <div className="mx-auto mt-2 h-5 w-24 shrink-0 rounded-full bg-black/70" aria-hidden="true" />
-            <div className="flex shrink-0 items-center gap-3 border-b border-white/8 px-5 py-3"><div className="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-[#f4c7d9]"><span className="text-sm font-bold text-[#8d3c64]">FS</span></div><div><p className="text-sm font-semibold text-[#252025]">Fotos Studio</p><p className="text-[11px] text-[#21a05a]">● online agora</p></div></div>
+            <div className="flex shrink-0 items-center gap-3 border-b border-[#d8d2d0] bg-[#f7f5f4] px-5 py-3"><div className="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-[#f4c7d9]"><span className="text-sm font-bold text-[#8d3c64]">FS</span></div><div><p className="text-sm font-semibold text-[#252025]">Fotos Studio</p><p className="text-[11px] text-[#21a05a]">● online agora</p></div></div>
             <div className="min-h-0 flex-1 space-y-2 overflow-hidden bg-[#eee9e7] bg-[radial-gradient(circle_at_center,rgba(105,74,91,.08)_1px,transparent_1px)] bg-[length:18px_18px] p-3 sm:p-4">
-              {messages.map((m,i)=><div key={i} className={`flex ${m.from==="user"?"justify-end":"justify-start"}`}><div className="max-w-[86%]">{m.image&&<img src={m.image} alt="Foto enviada" className="mb-2 h-52 w-40 rounded-2xl border border-white/10 object-cover object-top" />}<div className={`rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${m.from==="user"?"rounded-br-md bg-gradient-to-r from-[#d83e88] to-[#9e45df]":"rounded-bl-md bg-white text-[#533e49]"}`}>{m.text}</div></div></div>)}
+              {messages.map((m,i)=><div key={i} className={`flex ${m.from==="user"?"justify-end":"justify-start"}`}><div className="max-w-[86%]">{m.image&&<img src={m.image} alt="Foto enviada" className="mb-2 h-52 w-40 rounded-2xl border border-white/10 object-cover object-top" />}<div className={`rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${m.from==="user"?"rounded-br-md bg-[#d9fdd3] text-[#303030]":"rounded-bl-md bg-white text-[#533e49]"}`}>{m.text}</div></div></div>)}
 
               {typing&&<div className="flex justify-start"><div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-4 shadow-sm" aria-label="Digitando"><span className="h-2 w-2 animate-bounce rounded-full bg-[#987d8b] [animation-delay:-.3s]"/><span className="h-2 w-2 animate-bounce rounded-full bg-[#987d8b] [animation-delay:-.15s]"/><span className="h-2 w-2 animate-bounce rounded-full bg-[#987d8b]"/></div></div>}
 
