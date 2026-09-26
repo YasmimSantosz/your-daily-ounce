@@ -89,7 +89,7 @@ function SalesPage() {
       <section id="simulador" className="relative z-10 px-5 pb-24 pt-4">
           <div className="mx-auto max-w-[410px]">
           <div className="mb-5 text-center"><span className="text-xs uppercase tracking-[.25em] text-[#ff83bd]">1 · Teste no chat</span><h2 className="mt-3 text-3xl font-semibold">Veja como funciona</h2></div>
-          <div className="flex h-[min(680px,calc(100svh-32px))] min-h-[560px] flex-col overflow-hidden rounded-[38px] border-[6px] border-[#2b2029] bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)] ring-1 ring-[#ff65ad]/20">
+          <div className="flex h-[calc(100svh-190px)] min-h-[520px] max-h-[680px] flex-col overflow-hidden rounded-[38px] border-[6px] border-[#2b2029] bg-[#171017]/95 shadow-[0_30px_100px_rgba(255,53,151,.1)] ring-1 ring-[#ff65ad]/20 sm:h-[min(680px,calc(100svh-32px))] sm:min-h-[560px]">
             <div className="mx-auto mt-2 h-5 w-24 shrink-0 rounded-full bg-black/70" aria-hidden="true" />
             <div className="flex shrink-0 items-center gap-3 border-b border-white/8 px-5 py-3"><div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#ff5ba9] to-[#8f3cff]"><Sparkles className="h-4 w-4" /></div><div><p className="text-sm font-semibold">Candy AI</p><p className="text-[11px] text-[#ff86bb]">● online agora</p></div></div>
             <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain bg-[radial-gradient(circle_at_center,rgba(255,255,255,.025)_1px,transparent_1px)] bg-[length:18px_18px] p-4 [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
