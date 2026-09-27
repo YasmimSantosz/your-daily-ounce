@@ -127,7 +127,6 @@ function SalesPage() {
               </div>}
 
               {demoStep===2&&<div className="pointer-events-auto overflow-hidden rounded-2xl rounded-bl-md border border-[#dca7c0] bg-white p-2 text-[#533e49] shadow-sm"><div className="flex max-h-[360px] justify-center overflow-hidden rounded-xl bg-[#e5dce1]"><img src={sampleStudio} alt="Foto estúdio criada na demonstração" className="h-auto max-h-[360px] w-auto max-w-full object-contain" /></div><div className="px-2 pb-2 pt-3"><p className="text-sm font-semibold">Foto estúdio pronta ✨</p><p className="mt-1 text-xs leading-5 text-[#8d7581]">Agora você pode criar a sua própria versão.</p><button onClick={creator} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#ff3e98] to-[#9e42e9] px-5 py-3 text-xs font-bold text-white">Criar minha foto <ArrowRight className="h-4 w-4"/></button></div></div>}
-              <div ref={chatEndRef} aria-hidden="true" />
             </div>
           </div>
         </div>
